@@ -1,6 +1,7 @@
 import { Route, Routes,HashRouter } from "react-router-dom"
 import routes from "./config/routes"
 import Navbar from "./components/Navbar"
+import AuthChecker from './auth/AuthChecker'
 
 function App() {
 
@@ -12,7 +13,7 @@ function App() {
               <Route
                 key = {index}
                 path = {route.path}
-                element = {<route.component/>}
+                element = {route.protected ? (<AuthChecker><route.component/></AuthChecker>) : (<route.component/>)}
               />
             ))}
           </Routes>

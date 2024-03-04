@@ -1,8 +1,28 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
+import { signInWithPopup, signOut } from "firebase/auth"
+import {auth, Providers} from '../config/firebase'
+import { useNavigate } from "react-router-dom";
 
 function Navbar() {
-    
+    const navigate = useNavigate();
+
+    //signin
+    const signInOnClick = async () => {
+        const response = await signInWithPopup(auth, Providers.google);
+        if (response) {
+            if(auth.currentUser){
+                location.reload();
+            }
+        }
+    }
+
+    //signout
+    const signOutOnClick = async () => {
+        await signOut(auth);
+        location.reload();
+    }
+
     //variable and function that controlls navbar visibility
     const [isVisible, setIsVisible] = useState(false)
     
@@ -15,6 +35,7 @@ function Navbar() {
     const clicked = () => {
         setIsVisible(false)
     }
+    
     //body
     return (
         <nav className="flex items-center justify-between flex-wrap bg-gray-500 p-6 ">
@@ -34,11 +55,29 @@ function Navbar() {
                             <button>Home</button>
                         </Link>
                     </div>
-                    <div className="flex p-3 justify-center">
-                        <Link to='/dashboard' onClick={clicked} className=" p-4 flex place-items-center mt-4 lg:inline-block lg:mt-0 border rounded border-gray-200 text-gray-200 hover:text-white hover:border-white mr-4">
-                            <button>Dashboard</button>
-                        </Link>
-                    </div>
+
+                    {!auth.currentUser ?
+                        <>
+                            <div className="flex p-3 justify-center">
+                                <Link to='/' onClick={signInOnClick} className=" p-4 flex place-items-center mt-4 lg:inline-block lg:mt-0 border rounded border-gray-200 text-gray-200 hover:text-white hover:border-white mr-4">
+                                    <button>Sign In</button>
+                                </Link>
+                            </div>
+                        </>
+                    :
+                        <>
+                            <div className="flex p-3 justify-center">
+                                <Link to='/dashboard' onClick={clicked} className=" p-4 flex place-items-center mt-4 lg:inline-block lg:mt-0 border rounded border-gray-200 text-gray-200 hover:text-white hover:border-white mr-4">
+                                    <button>Dashboard</button>
+                                </Link>
+                            </div>
+                            <div className="flex p-3 justify-center">
+                                <Link to='/home' onClick={() => {signOutOnClick()}} className=" p-4 flex place-items-center mt-4 lg:inline-block lg:mt-0 border rounded border-gray-200 text-gray-200 hover:text-white hover:border-white mr-4">
+                                    <button>Sign Out</button>
+                                </Link>
+                            </div>
+                        </>
+                    }
                 </div>
             </div>) : (<></>)}
         </nav>

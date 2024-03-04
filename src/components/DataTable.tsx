@@ -1,7 +1,9 @@
-import { DataGrid, GridColDef , GridRow} from "@mui/x-data-grid"
+import { DataGrid, GridColDef} from "@mui/x-data-grid"
 import { useState } from "react"
+import { server_calls } from '../api/server';
 import Modal from "./Modal"
 import CarForm from "./CarForm"
+import { useGetData } from '../custom-hooks/FetchData';
 
 const columns: GridColDef[] = [
     {
@@ -39,19 +41,40 @@ const columns: GridColDef[] = [
 function DataTable() {
     const [isModalOpen,setModalOpen] = useState(false)
     const toggleModalOpen = () => {setModalOpen(!isModalOpen)}
-
+    const [selectionModel,setSelectionModel] = useState<string[]>([])
+    const {carData, getData} = useGetData();
+    
     return (
         <>
             <div>
                 <h1>Data Table</h1>
             </div>
             <div>
-                { !isModalOpen ? (<button onClick={toggleModalOpen} className="p-3 bg-slate-300 m-3 rounded hover:bg-slate-800 hover:text-white">Car Form Button</button>):(<><Modal open={isModalOpen} toggleForm={toggleModalOpen} form={<CarForm/>}/></>)}
+                { !isModalOpen ? 
+                (
+                    <button onClick={toggleModalOpen} className="p-3 bg-slate-300 m-3 rounded hover:bg-slate-800 hover:text-white">
+                        Car Form Button
+                    </button>
+                )
+                :
+                (
+                    <Modal 
+                        open={isModalOpen} 
+                        toggleForm={toggleModalOpen} 
+                        form={<CarForm/>}
+                    />
+                )
+                }
             </div>
             <div>
-{ 
-//               <DataGrid rows={carData} columns={columns} pageSizeOptions={[6]} checkboxSelection onSortModelChange={(item : any) => {setSelectionModel(item)}} columnVisibilityModel={{id : false}}/>
-}
+               <DataGrid 
+                    rows={carData} 
+                    columns={columns} 
+                    pageSizeOptions={[6]} 
+                    checkboxSelection 
+                    onSortModelChange={(item : any) => {setSelectionModel(item)}} 
+                    columnVisibilityModel={{id : false}}
+                />
             </div>
         </>
     )
