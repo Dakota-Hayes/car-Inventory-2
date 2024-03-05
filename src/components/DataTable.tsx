@@ -31,11 +31,6 @@ const columns: GridColDef[] = [
         headerName: 'Color',
         flex: 1
     },
-    {
-        field: 'date_created',
-        headerName: 'Date Added',
-        flex: 2
-    },
 ]
 
 function DataTable() {
@@ -44,37 +39,53 @@ function DataTable() {
     const [selectionModel,setSelectionModel] = useState<string[]>([])
     const {carData, getData} = useGetData();
     
+    const deleteData = () => {
+        console.log(selectionModel)
+        server_calls.delete(selectionModel);
+        getData();
+        console.log(`Selection model: ${selectionModel}`)
+        setTimeout(() => {window.location.reload()}, 500)
+    }
+
     return (
         <>
             <div>
-                <h1>Data Table</h1>
-            </div>
-            <div>
                 { !isModalOpen ? 
                 (
-                    <button onClick={toggleModalOpen} className="p-3 bg-slate-300 m-3 rounded hover:bg-slate-800 hover:text-white">
-                        Car Form Button
-                    </button>
+                    <>
+                        { selectionModel.length == 0 ?
+                        (
+                            <button onClick={toggleModalOpen} className="p-3 bg-slate-300 m-3 rounded hover:bg-slate-800 hover:text-white">Create Entry</button>
+                        )
+                        :
+                        (
+                            <>
+                                <button onClick={toggleModalOpen} className="p-3 bg-slate-300 m-3 rounded hover:bg-slate-800 hover:text-white">Update Entry</button>
+                                <button onClick={deleteData} className="p-3 bg-slate-300 m-3 rounded hover:bg-slate-800 hover:text-white">Delete Entry</button>
+                            </>
+                        )}                        
+                        <div>
+                            <h2 className='p-3 bg-slate-300 my-2 rounded'>Car Inventory</h2>
+                            <DataGrid 
+                                rows={carData} 
+                                columns={columns} 
+                                pageSizeOptions={[5]} 
+                                checkboxSelection 
+                                disableRowSelectionOnClick
+                                onRowSelectionModelChange={(item : any) => {setSelectionModel(item), console.log(item)}} 
+                                columnVisibilityModel={{id : false}}
+                            />
+                        </div>
+                    </>
                 )
                 :
                 (
                     <Modal 
                         open={isModalOpen} 
                         toggleForm={toggleModalOpen} 
-                        form={<CarForm/>}
+                        form={<CarForm id={selectionModel} />}
                     />
-                )
-                }
-            </div>
-            <div>
-               <DataGrid 
-                    rows={carData} 
-                    columns={columns} 
-                    pageSizeOptions={[6]} 
-                    checkboxSelection 
-                    onSortModelChange={(item : any) => {setSelectionModel(item)}} 
-                    columnVisibilityModel={{id : false}}
-                />
+                )}
             </div>
         </>
     )

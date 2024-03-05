@@ -2,11 +2,8 @@ import { useState } from "react"
 import { Link } from "react-router-dom"
 import { signInWithPopup, signOut } from "firebase/auth"
 import {auth, Providers} from '../config/firebase'
-import { useNavigate } from "react-router-dom";
 
 function Navbar() {
-    const navigate = useNavigate();
-
     //signin
     const signInOnClick = async () => {
         const response = await signInWithPopup(auth, Providers.google);
